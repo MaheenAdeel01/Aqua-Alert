@@ -8,6 +8,7 @@ import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
 import { WebBadge } from '@/components/web-badge';
 import { BottomTabInset, MaxContentWidth, Spacing } from '@/constants/theme';
+import { useTheme } from '@/hooks/use-theme';
 
 function getDevMenuHint() {
   if (Platform.OS === 'web') {
@@ -29,29 +30,36 @@ function getDevMenuHint() {
 }
 
 export default function HomeScreen() {
+  const theme = useTheme();
+
   return (
     <ThemedView style={styles.container}>
       <SafeAreaView style={styles.safeArea}>
         <ThemedView style={styles.heroSection}>
           <AnimatedIcon />
           <ThemedText type="title" style={styles.title}>
-            Welcome to&nbsp;Expo
+            Aqua&nbsp;Alert
+          </ThemedText>
+          <ThemedText style={styles.subtitleText} themeColor="textSecondary">
+            Flood Early Warning & Disaster Response
           </ThemedText>
         </ThemedView>
 
-        <ThemedText type="code" style={styles.code}>
-          get started
+        <ThemedText type="code" style={styles.code} themeColor="primary">
+          system operational
         </ThemedText>
 
-        <ThemedView type="backgroundElement" style={styles.stepContainer}>
+        <ThemedView
+          type="surfaceVariant"
+          style={[styles.stepContainer, { borderColor: theme.outlineSubtle, borderWidth: 1 }]}>
           <HintRow
-            title="Try editing"
-            hint={<ThemedText type="code">src/app/index.tsx</ThemedText>}
+            title="Design System"
+            hint={<ThemedText type="code">src/theme/index.ts</ThemedText>}
           />
           <HintRow title="Dev tools" hint={getDevMenuHint()} />
           <HintRow
-            title="Fresh start"
-            hint={<ThemedText type="code">npm run reset-project</ThemedText>}
+            title="Theme"
+            hint={<ThemedText type="code">Light & Dark Active</ThemedText>}
           />
         </ThemedView>
 
@@ -80,13 +88,20 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     flex: 1,
     paddingHorizontal: Spacing.four,
-    gap: Spacing.four,
+    gap: Spacing.two,
   },
   title: {
     textAlign: 'center',
   },
+  subtitleText: {
+    textAlign: 'center',
+    fontSize: 16,
+    lineHeight: 22,
+  },
   code: {
     textTransform: 'uppercase',
+    letterSpacing: 1,
+    fontWeight: '700',
   },
   stepContainer: {
     gap: Spacing.three,
