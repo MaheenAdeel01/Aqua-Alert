@@ -1,9 +1,11 @@
 import { DarkTheme, DefaultTheme, ThemeProvider } from 'expo-router';
 import * as SplashScreen from 'expo-splash-screen';
+import { useState } from 'react';
 import { useColorScheme } from 'react-native';
+import { SafeAreaProvider } from 'react-native-safe-area-context';
 
-import { AnimatedSplashOverlay } from '@/components/animated-icon';
 import AppTabs from '@/components/app-tabs';
+import { LoadingScreen } from '@/components/loading-screen';
 import { DarkThemeColors, LightThemeColors } from '@/theme';
 
 SplashScreen.preventAutoHideAsync();
@@ -37,11 +39,14 @@ const AquaAlertDarkTheme = {
 export default function TabLayout() {
   const colorScheme = useColorScheme();
   const theme = colorScheme === 'dark' ? AquaAlertDarkTheme : AquaAlertLightTheme;
+  const [loadingDone, setLoadingDone] = useState(false);
 
   return (
-    <ThemeProvider value={theme}>
-      <AnimatedSplashOverlay />
-      <AppTabs />
-    </ThemeProvider>
+    <SafeAreaProvider>
+      <ThemeProvider value={theme}>
+        <LoadingScreen onDone={() => setLoadingDone(true)} />
+        {loadingDone && <AppTabs />}
+      </ThemeProvider>
+    </SafeAreaProvider>
   );
 }

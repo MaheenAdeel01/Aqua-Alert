@@ -28,9 +28,9 @@
       [
         "expo-splash-screen",
         {
-          "backgroundColor": "#0EA5E9",
-          "image": "./assets/images/splash-icon.png",
-          "imageWidth": 76
+          "backgroundColor": "#081321",
+          "image": "./assets/images/aqua-logo.png",
+          "imageWidth": 132
         }
       ]
     ],
