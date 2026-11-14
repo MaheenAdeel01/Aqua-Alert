@@ -4,7 +4,7 @@ import * as SplashScreen from 'expo-splash-screen';
 import { StatusBar } from 'expo-status-bar';
 import * as SystemUI from 'expo-system-ui';
 import { useCallback, useEffect, useMemo, useState } from 'react';
-import { Platform, StyleSheet, Text, useWindowDimensions, View } from 'react-native';
+import { ActivityIndicator, Platform, StyleSheet, Text, useWindowDimensions, View } from 'react-native';
 import Animated, {
   cancelAnimation,
   Easing,
@@ -43,12 +43,9 @@ export function LoadingScreen({ durationMs = LOADING_DURATION_MS, onDone }: Load
   const [visible, setVisible] = useState(true);
 
   const bgFade = useSharedValue(0);
-  const kenBurns = useSharedValue(0);
   const logoIn = useSharedValue(0);
   const titleIn = useSharedValue(0);
-  const footerIn = useSharedValue(0);
   const loaderIn = useSharedValue(0);
-  const spin = useSharedValue(0);
   const breathe = useSharedValue(0);
   const exit = useSharedValue(1);
 
@@ -59,8 +56,6 @@ export function LoadingScreen({ durationMs = LOADING_DURATION_MS, onDone }: Load
       logoSize: clamp(104, Math.min(width * 0.44, height * 0.23), 232),
       titleSize: clamp(36, Math.min(width * 0.15, height * 0.07), 62),
       taglineSize: clamp(12, width * 0.036, 17),
-      mottoSize: clamp(16, Math.min(width * 0.05, height * 0.032), 24),
-      ringSize: clamp(38, width * 0.1, 52),
       loadingSize: clamp(12, width * 0.031, 14),
       gap: compact ? 18 : 30,
     };
@@ -71,39 +66,29 @@ export function LoadingScreen({ durationMs = LOADING_DURATION_MS, onDone }: Load
       bgFade.value = 1;
       logoIn.value = 1;
       titleIn.value = 1;
-      footerIn.value = 1;
       loaderIn.value = 1;
+      breathe.value = 1;
       return;
     }
 
-    bgFade.value = withTiming(1, { duration: 800, easing: Easing.out(Easing.quad) });
-    kenBurns.value = withTiming(1, {
-      duration: durationMs + EXIT_DURATION_MS,
-      easing: Easing.linear,
-    });
-    logoIn.value = withDelay(120, withTiming(1, { duration: 760, easing: Easing.out(Easing.cubic) }));
-    titleIn.value = withDelay(300, withTiming(1, { duration: 640, easing: Easing.out(Easing.cubic) }));
-    footerIn.value = withDelay(460, withTiming(1, { duration: 640, easing: Easing.out(Easing.cubic) }));
-    loaderIn.value = withDelay(600, withTiming(1, { duration: 600, easing: Easing.out(Easing.cubic) }));
-    spin.value = withRepeat(withTiming(1, { duration: 1500, easing: Easing.linear }), -1, false);
+    bgFade.value = withTiming(1, { duration: 600, easing: Easing.out(Easing.quad) });
+    logoIn.value = withDelay(100, withTiming(1, { duration: 700, easing: Easing.out(Easing.cubic) }));
+    titleIn.value = withDelay(260, withTiming(1, { duration: 600, easing: Easing.out(Easing.cubic) }));
+    loaderIn.value = withDelay(420, withTiming(1, { duration: 500, easing: Easing.out(Easing.cubic) }));
     breathe.value = withRepeat(
       withSequence(
-        withTiming(1, { duration: 1400, easing: Easing.inOut(Easing.quad) }),
-        withTiming(0, { duration: 1400, easing: Easing.inOut(Easing.quad) }),
+        withTiming(1, { duration: 1200, easing: Easing.inOut(Easing.quad) }),
+        withTiming(0, { duration: 1200, easing: Easing.inOut(Easing.quad) }),
       ),
       -1,
       false,
     );
   }, [
     reducedMotion,
-    durationMs,
     bgFade,
-    kenBurns,
     logoIn,
     titleIn,
-    footerIn,
     loaderIn,
-    spin,
     breathe,
   ]);
 
@@ -145,7 +130,6 @@ export function LoadingScreen({ durationMs = LOADING_DURATION_MS, onDone }: Load
 
   const bgStyle = useAnimatedStyle(() => ({
     opacity: bgFade.value,
-    transform: [{ scale: 1 + kenBurns.value * 0.06 }],
   }));
 
   const logoStyle = useAnimatedStyle(() => ({
@@ -161,21 +145,12 @@ export function LoadingScreen({ durationMs = LOADING_DURATION_MS, onDone }: Load
     transform: [{ translateY: interpolate(titleIn.value, [0, 1], [14, 0]) }],
   }));
 
-  const footerStyle = useAnimatedStyle(() => ({
-    opacity: footerIn.value,
-    transform: [{ translateY: interpolate(footerIn.value, [0, 1], [14, 0]) }],
-  }));
-
   const loaderStyle = useAnimatedStyle(() => ({
     opacity: loaderIn.value,
   }));
 
-  const spinStyle = useAnimatedStyle(() => ({
-    transform: [{ rotate: `${spin.value * 360}deg` }],
-  }));
-
   const breatheStyle = useAnimatedStyle(() => ({
-    opacity: interpolate(breathe.value, [0, 1], [0.72, 1]),
+    opacity: interpolate(breathe.value, [0, 1], [0.65, 1]),
   }));
 
   const exitStyle = useAnimatedStyle(() => ({
@@ -249,15 +224,11 @@ export function LoadingScreen({ durationMs = LOADING_DURATION_MS, onDone }: Load
         <View style={styles.spacerMid} />
 
         <Animated.View style={[styles.loader, { marginTop: metrics.gap }, loaderStyle]}>
-          <Animated.View
-            style={[
-              styles.spinner,
-              { width: metrics.ringSize, height: metrics.ringSize },
-              spinStyle,
-            ]}>
-            <View style={[styles.ringTrack, { borderRadius: metrics.ringSize / 2 }]} />
-            <View style={[styles.ringArc, { borderRadius: metrics.ringSize / 2 }]} />
-          </Animated.View>
+          <ActivityIndicator
+            size="large"
+            color={BrandColors.primaryLight}
+            style={styles.spinner}
+          />
           <Animated.Text
             style={[
               styles.loadingText,
@@ -323,41 +294,11 @@ const styles = StyleSheet.create({
     fontWeight: '500',
     textAlign: 'center',
   },
-  footer: {
-    alignItems: 'center',
-  },
-  motto: {
-    color: 'rgba(248, 250, 252, 0.92)',
-    fontStyle: 'italic',
-    fontWeight: '500',
-    textAlign: 'center',
-  },
-  rule: {
-    width: 46,
-    height: 2,
-    borderRadius: 1,
-    backgroundColor: 'rgba(125, 211, 252, 0.45)',
-  },
   loader: {
     alignItems: 'center',
   },
   spinner: {
     marginBottom: 14,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  ringTrack: {
-    ...StyleSheet.absoluteFill,
-    borderWidth: 1.5,
-    borderColor: 'rgba(148, 163, 184, 0.2)',
-  },
-  ringArc: {
-    ...StyleSheet.absoluteFill,
-    borderWidth: 2.5,
-    borderColor: 'transparent',
-    borderTopColor: BrandColors.primaryLight,
-    borderRightColor: BrandColors.primary,
-    borderLeftColor: BrandColors.primary,
   },
   loadingText: {
     color: DarkThemeColors.textMuted,
