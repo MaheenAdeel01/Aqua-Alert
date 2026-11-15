@@ -3,11 +3,12 @@ import React, { useMemo } from 'react';
 import { StyleSheet, Text, useWindowDimensions, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
+import { Spacing } from '@/constants/theme';
 import { BrandColors, DarkThemeColors } from '@/theme';
 import { Icon } from './icon';
 
 interface DashboardHeroProps {
-  userName?: string;
+  greeting?: string;
   locationName?: string;
 }
 
@@ -15,12 +16,25 @@ function clamp(min: number, value: number, max: number) {
   return Math.min(Math.max(value, min), max);
 }
 
+function getTimeOfDayGreeting(): string {
+  const hour = new Date().getHours();
+  if (hour < 12) return 'Good Morning';
+  if (hour < 17) return 'Good Afternoon';
+  return 'Good Evening';
+}
+
+/**
+ * DashboardHero renders upper-left branding, identity-free greeting, and location pin.
+ * Preserves the cyclone visibility in the upper-right with deliberate negative space.
+ */
 export function DashboardHero({
-  userName = 'Alex',
+  greeting,
   locationName = 'Miami, Florida',
 }: DashboardHeroProps) {
   const { width, height } = useWindowDimensions();
   const insets = useSafeAreaInsets();
+
+  const activeGreeting = greeting ?? getTimeOfDayGreeting();
 
   const metrics = useMemo(() => {
     return {
@@ -29,9 +43,9 @@ export function DashboardHero({
       greetingSize: clamp(20, width * 0.056, 26),
       locationSize: clamp(13, width * 0.034, 15),
       pinSize: clamp(14, width * 0.036, 16),
-      paddingTop: Math.max(insets.top, 16) + 4,
-      gapBetweenBrandAndGreeting: clamp(12, height * 0.016, 20),
-      marginBottom: clamp(16, height * 0.022, 26),
+      paddingTop: Math.max(insets.top, Spacing.three) + Spacing.one,
+      gapBetweenBrandAndGreeting: clamp(Spacing.three, height * 0.016, Spacing.four),
+      marginBottom: clamp(Spacing.three, height * 0.022, Spacing.four),
     };
   }, [width, height, insets.top]);
 
@@ -44,7 +58,7 @@ export function DashboardHero({
           marginBottom: metrics.marginBottom,
         },
       ]}>
-      {/* Left Column: Branding, Greeting & Location - Stays safely away from cyclone */}
+      {/* Left Column: Branding, Greeting & Location */}
       <View style={styles.leftColumn}>
         {/* Brand Row: Logo + App Name */}
         <View style={styles.brandRow}>
@@ -67,7 +81,7 @@ export function DashboardHero({
           </Text>
         </View>
 
-        {/* Greeting & Location Info */}
+        {/* Greeting & Location Info (No user name, zero auth/login assumption) */}
         <View style={[styles.greetingBlock, { marginTop: metrics.gapBetweenBrandAndGreeting }]}>
           <Text
             style={[
@@ -77,8 +91,8 @@ export function DashboardHero({
                 lineHeight: metrics.greetingSize * 1.18,
               },
             ]}
-            numberOfLines={2}>
-            Good Morning,{'\n'}{userName}
+            numberOfLines={1}>
+            {activeGreeting}
           </Text>
 
           <View style={styles.locationRow}>
@@ -142,7 +156,7 @@ const styles = StyleSheet.create({
     fontWeight: '800',
   },
   greetingBlock: {
-    gap: 6,
+    gap: 4,
   },
   greetingText: {
     color: DarkThemeColors.textPrimary,
@@ -166,6 +180,5 @@ const styles = StyleSheet.create({
   cycloneBreathingRoom: {
     width: '40%',
     minHeight: 110,
-    // Transparent spacer protecting the cyclone visual in dashboardbg.png
   },
 });

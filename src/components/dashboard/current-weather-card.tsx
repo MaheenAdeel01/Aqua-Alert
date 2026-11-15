@@ -1,6 +1,9 @@
 import React, { useMemo } from 'react';
 import { StyleSheet, Text, useWindowDimensions, View } from 'react-native';
 
+import { AnimatedNumber } from '@/components/ui/animated-number';
+import { GlassCard } from '@/components/ui/glass-card';
+import { BorderRadius, Spacing } from '@/constants/theme';
 import { BrandColors, DarkThemeColors } from '@/theme';
 import { Icon } from './icon';
 
@@ -13,12 +16,17 @@ interface CurrentWeatherCardProps {
   windSpeed?: string;
   humidity?: string;
   pressure?: string;
+  updatedAgo?: string;
 }
 
 function clamp(min: number, value: number, max: number) {
   return Math.min(Math.max(value, min), max);
 }
 
+/**
+ * Current conditions hero telemetry card.
+ * Wrapped in <GlassCard> with "Updated Xm ago" caption token and unified outlined icons.
+ */
 export function CurrentWeatherCard({
   temperature = 28,
   condition = 'Severe Tropical Storm',
@@ -28,13 +36,13 @@ export function CurrentWeatherCard({
   windSpeed = '48 km/h',
   humidity = '92%',
   pressure = '992 hPa',
+  updatedAgo = '4m ago',
 }: CurrentWeatherCardProps) {
   const { width } = useWindowDimensions();
 
   const metrics = useMemo(() => {
     return {
-      padding: clamp(16, width * 0.045, 22),
-      radius: clamp(16, width * 0.045, 20),
+      padding: clamp(Spacing.three, width * 0.045, Spacing.four),
       tempSize: clamp(48, width * 0.13, 62),
       conditionSize: clamp(15, width * 0.04, 18),
       detailSize: clamp(12, width * 0.031, 13),
@@ -44,14 +52,7 @@ export function CurrentWeatherCard({
   }, [width]);
 
   return (
-    <View
-      style={[
-        styles.card,
-        {
-          padding: metrics.padding,
-          borderRadius: metrics.radius,
-        },
-      ]}>
+    <GlassCard padding={metrics.padding} style={styles.card}>
       {/* Header: Condition headline + vector storm icon badge */}
       <View style={styles.headerRow}>
         <View style={styles.headerTextGroup}>
@@ -66,7 +67,11 @@ export function CurrentWeatherCard({
             numberOfLines={1}>
             {condition}
           </Text>
-          <Text style={styles.subtext}>Active coastal storm advisory</Text>
+          <View style={styles.subtextRow}>
+            <Text style={styles.subtext}>Active coastal storm advisory</Text>
+            <Text style={styles.bulletSeparator}>·</Text>
+            <Text style={styles.updatedCaption}>Updated {updatedAgo}</Text>
+          </View>
         </View>
 
         <View
@@ -75,7 +80,7 @@ export function CurrentWeatherCard({
             {
               width: metrics.badgeSize,
               height: metrics.badgeSize,
-              borderRadius: metrics.badgeSize * 0.32,
+              borderRadius: BorderRadius.md,
             },
           ]}>
           <Icon
@@ -88,16 +93,17 @@ export function CurrentWeatherCard({
 
       {/* Main Reading: Large Temperature readout + Secondary Details */}
       <View style={styles.tempRow}>
-        <Text
+        <AnimatedNumber
+          value={temperature}
+          suffix="°"
           style={[
             styles.tempValue,
             {
               fontSize: metrics.tempSize,
               lineHeight: metrics.tempSize * 1.05,
             },
-          ]}>
-          {temperature}°
-        </Text>
+          ]}
+        />
 
         <View style={styles.tempMetaGroup}>
           <View style={styles.metaLine}>
@@ -136,20 +142,12 @@ export function CurrentWeatherCard({
           <Text style={styles.telemetryValueCyan}>{pressure}</Text>
         </View>
       </View>
-    </View>
+    </GlassCard>
   );
 }
 
 const styles = StyleSheet.create({
   card: {
-    backgroundColor: 'rgba(17, 31, 48, 0.82)',
-    borderWidth: 1,
-    borderColor: 'rgba(56, 189, 248, 0.22)',
-    shadowColor: '#0EA5E9',
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.2,
-    shadowRadius: 10,
-    elevation: 4,
     gap: 14,
   },
   headerRow: {
@@ -160,17 +158,32 @@ const styles = StyleSheet.create({
   headerTextGroup: {
     flex: 1,
     paddingRight: 10,
-    gap: 2,
+    gap: 3,
   },
   conditionText: {
     color: DarkThemeColors.textPrimary,
     fontWeight: '700',
     letterSpacing: -0.3,
   },
+  subtextRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 5,
+    flexWrap: 'wrap',
+  },
   subtext: {
     color: DarkThemeColors.textMuted,
     fontSize: 12,
     fontWeight: '400',
+  },
+  bulletSeparator: {
+    color: DarkThemeColors.textDisabled,
+    fontSize: 12,
+  },
+  updatedCaption: {
+    color: DarkThemeColors.textSecondary,
+    fontSize: 11.5,
+    fontWeight: '500',
   },
   iconBadge: {
     backgroundColor: 'rgba(14, 165, 233, 0.14)',
