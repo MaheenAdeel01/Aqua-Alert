@@ -1,10 +1,5 @@
-import { BrandColors, NeutralColors } from './colors';
 import { DarkThemeColors } from './darkTheme';
-import { DisasterColors } from './disasterColors';
-import { GradientColors } from './gradients';
 import { LightThemeColors } from './lightTheme';
-import { SemanticColors } from './semanticColors';
-import { SeverityColors } from './severityColors';
 
 export * from './colors';
 export * from './semanticColors';

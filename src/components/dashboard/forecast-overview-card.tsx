@@ -1,10 +1,13 @@
 import React, { useMemo } from 'react';
 import { StyleSheet, Text, useWindowDimensions, View } from 'react-native';
 
+import { GlassCard } from '@/components/ui/glass-card';
+import { SectionHeader } from '@/components/ui/section-header';
+import { BorderRadius, Spacing } from '@/constants/theme';
 import { BrandColors, DarkThemeColors } from '@/theme';
 import { Icon, IconName } from './icon';
 
-interface ForecastDay {
+export interface ForecastDay {
   day: string;
   date: string;
   icon: IconName;
@@ -61,14 +64,16 @@ function clamp(min: number, value: number, max: number) {
   return Math.min(Math.max(value, min), max);
 }
 
+/**
+ * Standardized 4-Day Forecast Overview component.
+ * Wrapped in <GlassCard> with <SectionHeader> and unified outlined iconography.
+ */
 export function ForecastOverviewCard({ days = DEFAULT_FORECAST }: ForecastOverviewCardProps) {
   const { width } = useWindowDimensions();
 
   const metrics = useMemo(() => {
     return {
-      padding: clamp(16, width * 0.045, 20),
-      radius: clamp(16, width * 0.045, 20),
-      titleSize: clamp(14, width * 0.038, 16.5),
+      padding: clamp(Spacing.three, width * 0.045, Spacing.four),
       daySize: clamp(13, width * 0.035, 14.5),
       conditionSize: clamp(11.5, width * 0.03, 13),
       tempSize: clamp(13, width * 0.035, 14.5),
@@ -77,29 +82,20 @@ export function ForecastOverviewCard({ days = DEFAULT_FORECAST }: ForecastOvervi
   }, [width]);
 
   return (
-    <View
-      style={[
-        styles.card,
-        {
-          padding: metrics.padding,
-          borderRadius: metrics.radius,
-        },
-      ]}>
-      {/* Header */}
-      <View style={styles.header}>
-        <View style={styles.titleGroup}>
-          <Icon name="calendar" size={18} color={BrandColors.primaryLight} />
-          <Text style={[styles.title, { fontSize: metrics.titleSize }]}>
-            4-Day Forecast Overview
-          </Text>
-        </View>
-        <Text style={styles.badgeText}>72-HR OUTLOOK</Text>
-      </View>
+    <GlassCard padding={metrics.padding} style={styles.card}>
+      {/* Standardized Section Header */}
+      <SectionHeader
+        icon="calendar"
+        title="4-Day Forecast Overview"
+        trailing="72-HR OUTLOOK"
+      />
 
       {/* Days List */}
       <View style={styles.daysList}>
         {days.map((item, index) => {
           const isLast = index === days.length - 1;
+          const isToday = index === 0;
+
           return (
             <View
               key={item.day}
@@ -121,7 +117,7 @@ export function ForecastOverviewCard({ days = DEFAULT_FORECAST }: ForecastOvervi
                   <Icon
                     name={item.icon}
                     size={metrics.iconSize}
-                    color={index === 0 ? BrandColors.primaryLight : '#94A3B8'}
+                    color={isToday ? BrandColors.primaryLight : DarkThemeColors.textMuted}
                   />
                 </View>
                 <View style={styles.conditionTextGroup}>
@@ -149,42 +145,13 @@ export function ForecastOverviewCard({ days = DEFAULT_FORECAST }: ForecastOvervi
           );
         })}
       </View>
-    </View>
+    </GlassCard>
   );
 }
 
 const styles = StyleSheet.create({
   card: {
-    backgroundColor: 'rgba(17, 31, 48, 0.82)',
-    borderWidth: 1,
-    borderColor: 'rgba(56, 189, 248, 0.22)',
-    shadowColor: '#0EA5E9',
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.18,
-    shadowRadius: 10,
-    elevation: 3,
     gap: 14,
-  },
-  header: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-  },
-  titleGroup: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 8,
-  },
-  title: {
-    color: DarkThemeColors.textPrimary,
-    fontWeight: '700',
-    letterSpacing: -0.3,
-  },
-  badgeText: {
-    color: DarkThemeColors.textMuted,
-    fontSize: 10,
-    fontWeight: '700',
-    letterSpacing: 0.8,
   },
   daysList: {
     gap: 2,
@@ -222,7 +189,7 @@ const styles = StyleSheet.create({
   iconCircle: {
     width: 32,
     height: 32,
-    borderRadius: 8,
+    borderRadius: BorderRadius.sm,
     backgroundColor: 'rgba(8, 20, 36, 0.7)',
     alignItems: 'center',
     justifyContent: 'center',
