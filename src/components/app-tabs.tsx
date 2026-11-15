@@ -1,30 +1,20 @@
-import { NativeTabs } from 'expo-router/native-tabs';
+import { Slot } from 'expo-router';
+import React from 'react';
+import { StyleSheet, View } from 'react-native';
 
-import { useTheme } from '@/hooks/use-theme';
+import { DarkThemeColors } from '@/theme';
 
 export default function AppTabs() {
-  const theme = useTheme();
-
   return (
-    <NativeTabs
-      backgroundColor={theme.background}
-      indicatorColor={theme.surfaceVariant}
-      labelStyle={{ selected: { color: theme.primary } }}>
-      <NativeTabs.Trigger name="index">
-        <NativeTabs.Trigger.Label>Home</NativeTabs.Trigger.Label>
-        <NativeTabs.Trigger.Icon
-          src={require('@/assets/images/tabIcons/home.png')}
-          renderingMode="template"
-        />
-      </NativeTabs.Trigger>
-
-      <NativeTabs.Trigger name="explore">
-        <NativeTabs.Trigger.Label>Explore</NativeTabs.Trigger.Label>
-        <NativeTabs.Trigger.Icon
-          src={require('@/assets/images/tabIcons/explore.png')}
-          renderingMode="template"
-        />
-      </NativeTabs.Trigger>
-    </NativeTabs>
+    <View style={styles.container}>
+      <Slot />
+    </View>
   );
 }
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: DarkThemeColors.background,
+  },
+});
