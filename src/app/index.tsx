@@ -6,6 +6,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { CurrentWeatherCard } from '@/components/dashboard/current-weather-card';
 import { DashboardBackground } from '@/components/dashboard/dashboard-background';
 import { DashboardHero } from '@/components/dashboard/dashboard-hero';
+import { DashboardNavBar } from '@/components/dashboard/dashboard-nav-bar';
 import { ForecastOverviewCard } from '@/components/dashboard/forecast-overview-card';
 import { LiveRadarPlaceholder } from '@/components/dashboard/live-radar-placeholder';
 import { RiskMetricsRow } from '@/components/dashboard/risk-metrics-row';
@@ -23,7 +24,7 @@ export default function DashboardScreen() {
         contentContainerStyle={[
           styles.scrollContent,
           {
-            paddingBottom: Math.max(insets.bottom, 16) + 70,
+            paddingBottom: Math.max(insets.bottom, 16) + 95,
             maxWidth: Math.min(width, 540),
           },
         ]}
@@ -41,6 +42,9 @@ export default function DashboardScreen() {
           <SafetyTipsCard />
         </View>
       </ScrollView>
+
+      {/* Professional 5-Item Fixed Bottom Navigation Bar */}
+      <DashboardNavBar />
     </DashboardBackground>
   );
 }
