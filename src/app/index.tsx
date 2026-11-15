@@ -1,9 +1,12 @@
 import { StatusBar } from 'expo-status-bar';
+import React from 'react';
 import { ScrollView, StyleSheet, useWindowDimensions, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
+import { CurrentWeatherCard } from '@/components/dashboard/current-weather-card';
 import { DashboardBackground } from '@/components/dashboard/dashboard-background';
 import { DashboardHero } from '@/components/dashboard/dashboard-hero';
+import { RiskMetricsRow } from '@/components/dashboard/risk-metrics-row';
 
 export default function DashboardScreen() {
   const { width } = useWindowDimensions();
@@ -26,8 +29,11 @@ export default function DashboardScreen() {
         {/* Dynamic Hero Section preserving upper-right cyclone */}
         <DashboardHero userName="Alex" locationName="Miami, Florida" />
 
-        {/* Phase 2, 3, 4 components will slot in here */}
-        <View style={styles.contentBody} />
+        {/* Telemetry Cards Stream */}
+        <View style={styles.contentBody}>
+          <CurrentWeatherCard />
+          <RiskMetricsRow />
+        </View>
       </ScrollView>
     </DashboardBackground>
   );
