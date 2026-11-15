@@ -1,58 +1,69 @@
-# Master Plan: Aqua Alert Dashboard Frontend
+# Master Plan: Aqua Alert UI Polishing & Design System Overhaul
 
 **Date:** 2026-11-15  
-**Status:** COMPLETED (Phase 5 of 5)  
-**Total Phases:** 5  
-**Category:** Frontend Architecture, Design Taste, Anti-AI SOP, Responsive Engineering  
+**Status:** READY TO IMPLEMENT (Phase 1 Pending Approval)  
+**Total Phases:** 3  
+**Category:** Frontend Architecture, Design System, Motion & Interaction, Visual Polish  
+**Reference Screen:** Home Dashboard (`src/app/index.tsx`)  
+**Scope Boundary:** Front-end UI, layout, styling, icons, and animation ONLY. No changes to backend logic, data fetching, APIs, permission-request logic, or no-login/no-auth flow.
 
 ---
 
-## 1. Goal & Architecture
+## 1. System Architecture & Token Mapping
 
-Build the production-quality Aqua Alert Dashboard frontend in React Native Expo, strictly preserving the provided storm/cyclone background asset (`assets/dashboardbg.png`) and the clean transparent logo (`assets/aqua_alert_logo_transparent_clean.png`), visually harmonized with the existing loading screen design system.
-
-### Key Technical & Visual Constraints
-- **Main Background & Storm Composition:** The main screen background must use `assets/dashboardbg.png`. The storm/cyclone situated in the upper-right area must remain clearly visible and never obscured by greeting text, cards, or status indicators.
-- **Brand Consistency:** Exact dark theme alignment with `src/components/loading-screen.tsx` and `src/theme/darkTheme.ts` (Deep Navy `#081321`, Card Surfaces `rgba(17, 31, 48, 0.78)`, Cyan Accent `#0EA5E9` / `#38BDF8`, Orange Risk `#F97316`, Text `#F8FAFC`, `#CBD5E1`, `#94A3B8`).
-- **Zero AI Slop:** No emojis, no uppercase tracked eyebrows, no floating blur blobs, no generic 3-card equal grids. Real environmental telemetry hierarchy.
-- **Component Decomposition:** Deconstruct into modular components under `src/components/dashboard/`:
-  1. `DashboardBackground`: Aspect-ratio-preserving background wrapper.
-  2. `DashboardHero`: Upper-left branding + greeting & location with asymmetric breathing space protecting the upper-right cyclone.
-  3. `CurrentWeatherCard`: Temperature, conditions, feels-like, and weather iconography.
-  4. `RiskMetricsRow`: Dual asymmetric cards for Rain Probability (cyan bar) and Flood Risk (warning icon, orange progress indicator).
-  5. `LiveRadarPlaceholder`: Sleek glassmorphic radar telemetry placeholder preparing for interactive globe integration.
-  6. `ForecastOverviewCard`: 4-day atmospheric forecast with day tags, icons, and temperature ranges.
-  7. `SafetyTipsCard`: High-utility compact advisory with shield icon and localized flood safety recommendations.
-  8. `DashboardNavBar`: Fixed 5-tab navigation (Home, Map, Alerts, Analytics, Settings) with active cyan indicators and safe-area padding.
-- **Responsiveness:** Dynamic scaling across compact (320px–375px) to standard (390px–430px) and large phone screens using `useSafeAreaInsets` and `useWindowDimensions`.
-
----
-
-## 2. Phase Breakdown
-
-- [x] **Phase 1: Foundation, Tokens, Background & Hero Section**
-  - *Skills:* `frontend-baseline`, `design-taste-frontend`, `phone-layout-master`
-  - *Deliverables:* Theme tokens, dashboard background framing, upper-left branding, cyclone visibility preservation, hero greeting/location.
-- [x] **Phase 2: Primary Telemetry (Weather Card & Risk Metrics Row)**
-  - *Skills:* `frontend-baseline`, `design-engineering`, `svg-icon-craftsman`
-  - *Deliverables:* Current weather card, Rain probability card with cyan progress bar, Flood risk card with orange severity indicator.
-- [x] **Phase 3: Secondary Telemetry (Radar Placeholder, 4-Day Forecast & Safety Tips)**
-  - *Skills:* `frontend-baseline`, `design-taste-frontend`, `ui-design-principles`
-  - *Deliverables:* Live radar placeholder container, 4-day forecast overview component, compact safety tips card with shield vector.
-- [x] **Phase 4: Bottom Navigation Bar & Tab Routing**
-  - *Skills:* `frontend-baseline`, `phone-layout-master`, `mobile-native-feel`
-  - *Deliverables:* 5-item bottom navigation bar (Home, Map, Alerts, Analytics, Settings), active cyan glow, safe-area inset anchoring, zero emoji standard.
-- [x] **Phase 5: Full Integration, Responsive Scaling & Anti-Slop Audit**
-  - *Skills:* `frontend-baseline`, `anti-ai-sop-agent`, `ui-stress-tester`
-  - *Deliverables:* Full page assembly in `src/app/index.tsx`, testing across screen dimensions, no-clipping verification, cyclone visibility check, typecheck.
+### Existing Token Authority
+Tokens defined in `src/theme/` and `src/constants/theme.ts`:
+- **Backgrounds & Surfaces:**
+  - `NeutralColors.background` (`#081321`) / `DarkThemeColors.background`
+  - `NeutralColors.surface` (`#111F30`) / `DarkThemeColors.surface`
+  - `NeutralColors.surfaceVariant` (`#1C2D42`)
+  - `NeutralColors.surfaceElevated` (`#243950`)
+  - Glass Surface: `rgba(17, 31, 48, 0.82)` with border `rgba(56, 189, 248, 0.22)`
+- **Typography & Text Tokens:**
+  - `NeutralColors.textPrimary` (`#F8FAFC`) / `DarkThemeColors.textPrimary`
+  - `NeutralColors.textSecondary` (`#CBD5E1`) / `DarkThemeColors.textSecondary`
+  - `NeutralColors.textMuted` (`#94A3B8`) / `DarkThemeColors.textMuted`
+  - `NeutralColors.textDisabled` (`#64748B`)
+- **Three-Tier Severity System:**
+  - **Calm / Informational:** `BrandColors.primaryLight` (`#7DD3FC` / `#38BDF8`) & `SemanticColors.information` (`#3B82F6`)
+  - **Elevated / Caution:** `SeverityColors.warning` (`#F97316`) & `SemanticColors.warning` (`#F59E0B`)
+  - **Critical / Emergency:** `SeverityColors.emergency` (`#DC2626`) & `SemanticColors.critical` (`#EF4444`)
+- **Spacing & Radius Tokens (`src/constants/theme.ts`):**
+  - Spacing: `half` (2px), `one` (4px), `two` (8px), `three` (16px), `four` (24px), `five` (32px), `six` (64px)
+  - Card Radius: Standardized fluid clamp (16px to 20px) matching token scale
+- **Unified Outlined Icons:**
+  - Single outlined 24×24 icon library with uniform 2.0px stroke (`assets/icons/*.svg` via `src/components/dashboard/icon.tsx`). Zero mixed styles or filled glyphs.
 
 ---
 
-## 3. Global Verification Standards
+## 2. Shared Core Components
 
-1. `npx tsc --noEmit` must pass with zero TypeScript errors.
-2. `npx expo lint` must pass with zero lint errors.
-3. Upper-right cyclone must remain unobstructed on viewports from 320px to 480px width.
-4. Navigation bar must remain pinned at bottom with correct safe-area insets.
-5. All 6 core cards rendered with exact colors, transparency, borders, and typography.
-6. Zero emojis present in code or UI text.
+To guarantee zero visual drift between Home, Map, Alerts, Analytics, and Settings:
+1. `<GlassCard>`: Base glassmorphic surface wrapping existing background, border, blur tokens, radius token, and padding.
+2. `<StatCard icon label value caption severity>`: Pixel-identical layout for Rain Probability and Flood Risk, differing only in content and severity tier. Fixed height, strictly NO expand/collapse.
+3. `<SectionHeader icon title trailing?>`: Standardized layout for section icons, titles, and trailing metadata tags.
+4. `<SeverityBadge level label>`: Colored pill status indicator strictly mapped to Calm, Elevated, or Critical tokens. Fixes the safety advisory bug.
+5. `<BottomNav>`: Unified 5-item navigation bar across all screens with active glow indicators and notification badge support.
+
+---
+
+## 3. Phase Roadmap
+
+- [x] **Phase 1: Fix System Bugs, Token Mapping & Reusable Component System**
+  - *Files:* `src/theme/`, `src/components/ui/`, `src/components/dashboard/`, `src/app/index.tsx`
+  - *Focus:* Bug fixes (remove Alex personalization, fix radar placeholder dev copy, fix advisory severity colors), build 5 reusable components, icon audit, token enforcement, fallback states (offline, location denied, load failed).
+- [ ] **Phase 2: Motion, Feedback & Targeted Interaction Layer**
+  - *Files:* `src/components/dashboard/`, `src/components/ui/`, `src/app/index.tsx`
+  - *Focus:* Staggered entrance, scroll-condensing sticky header, live badge pulse, animated number count-ups, custom pull-to-refresh spinner, shimmer skeletons, tap feedback, tab transitions, targeted inline expand/collapse (Forecast, Radar, Safety Advisory ONLY).
+- [ ] **Phase 3: Visual Polish, Typography & Cross-Screen Parity**
+  - *Files:* `src/theme/`, `src/components/`, `src/app/`
+  - *Focus:* `<GlassCard>` parity check across all tabs, subtle ambient storm background motion, display numeral typography, parity implementation across Map/Alerts/Analytics/Settings, accessibility & touch targets.
+
+---
+
+## 4. Verification Protocol
+
+- Typecheck: `npx tsc --noEmit`
+- Linter: `npx expo lint`
+- Zero hardcoded hex colors outside token files.
+- Zero AI slop: no emojis, no uppercase tracked eyebrows, no floating blur blobs.
