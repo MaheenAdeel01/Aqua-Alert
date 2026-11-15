@@ -6,7 +6,10 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { CurrentWeatherCard } from '@/components/dashboard/current-weather-card';
 import { DashboardBackground } from '@/components/dashboard/dashboard-background';
 import { DashboardHero } from '@/components/dashboard/dashboard-hero';
+import { ForecastOverviewCard } from '@/components/dashboard/forecast-overview-card';
+import { LiveRadarPlaceholder } from '@/components/dashboard/live-radar-placeholder';
 import { RiskMetricsRow } from '@/components/dashboard/risk-metrics-row';
+import { SafetyTipsCard } from '@/components/dashboard/safety-tips-card';
 
 export default function DashboardScreen() {
   const { width } = useWindowDimensions();
@@ -29,10 +32,13 @@ export default function DashboardScreen() {
         {/* Dynamic Hero Section preserving upper-right cyclone */}
         <DashboardHero userName="Alex" locationName="Miami, Florida" />
 
-        {/* Telemetry Cards Stream */}
+        {/* Telemetry Stream */}
         <View style={styles.contentBody}>
           <CurrentWeatherCard />
           <RiskMetricsRow />
+          <LiveRadarPlaceholder />
+          <ForecastOverviewCard />
+          <SafetyTipsCard />
         </View>
       </ScrollView>
     </DashboardBackground>
