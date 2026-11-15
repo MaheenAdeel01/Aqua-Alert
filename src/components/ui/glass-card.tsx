@@ -1,5 +1,6 @@
 import React, { useMemo } from 'react';
 import {
+  Pressable,
   StyleProp,
   StyleSheet,
   useWindowDimensions,
@@ -17,6 +18,9 @@ export interface GlassCardProps {
   padding?: number;
   borderRadius?: number;
   noBorder?: boolean;
+  onPress?: () => void;
+  accessibilityLabel?: string;
+  accessibilityRole?: 'button' | 'none';
 }
 
 function clamp(min: number, value: number, max: number) {
@@ -26,6 +30,7 @@ function clamp(min: number, value: number, max: number) {
 /**
  * Base GlassCard component shared across all screens.
  * Uses exact surface tokens, border tokens, and radius tokens.
+ * Features tactile press feedback when onPress is provided.
  */
 export function GlassCard({
   children,
@@ -34,6 +39,9 @@ export function GlassCard({
   padding,
   borderRadius,
   noBorder = false,
+  onPress,
+  accessibilityLabel,
+  accessibilityRole,
 }: GlassCardProps) {
   const { width } = useWindowDimensions();
 
@@ -57,7 +65,7 @@ export function GlassCard({
     ? '#F97316'
     : '#0EA5E9';
 
-  return (
+  const cardContent = (
     <View
       style={[
         styles.baseCard,
@@ -72,9 +80,33 @@ export function GlassCard({
       {children}
     </View>
   );
+
+  if (onPress) {
+    return (
+      <Pressable
+        onPress={onPress}
+        style={({ pressed }) => [
+          styles.pressableContainer,
+          pressed && styles.cardPressed,
+        ]}
+        accessibilityRole={accessibilityRole ?? 'button'}
+        accessibilityLabel={accessibilityLabel}>
+        {cardContent}
+      </Pressable>
+    );
+  }
+
+  return cardContent;
 }
 
 const styles = StyleSheet.create({
+  pressableContainer: {
+    width: '100%',
+  },
+  cardPressed: {
+    transform: [{ scale: 0.985 }],
+    opacity: 0.92,
+  },
   baseCard: {
     backgroundColor: 'rgba(17, 31, 48, 0.82)',
     borderWidth: 1,
@@ -83,5 +115,6 @@ const styles = StyleSheet.create({
     shadowRadius: 10,
     elevation: 3,
     position: 'relative',
+    width: '100%',
   },
 });

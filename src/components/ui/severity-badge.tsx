@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import {
   StyleProp,
   StyleSheet,
@@ -7,6 +7,14 @@ import {
   View,
   ViewStyle,
 } from 'react-native';
+import Animated, {
+  Easing,
+  useAnimatedStyle,
+  useSharedValue,
+  withRepeat,
+  withSequence,
+  withTiming,
+} from 'react-native-reanimated';
 
 import { BorderRadius } from '@/constants/theme';
 import { SeverityTier, SeverityTierTokens } from '@/theme';
@@ -20,9 +28,67 @@ export interface SeverityBadgeProps {
   size?: 'sm' | 'md';
 }
 
+function AnimatedPulseDot({ color }: { color: string }) {
+  const scale = useSharedValue(1);
+  const ringScale = useSharedValue(1);
+  const ringOpacity = useSharedValue(0.7);
+
+  useEffect(() => {
+    // Pulse core breathing
+    scale.value = withRepeat(
+      withSequence(
+        withTiming(1.3, { duration: 900, easing: Easing.inOut(Easing.ease) }),
+        withTiming(1.0, { duration: 900, easing: Easing.inOut(Easing.ease) })
+      ),
+      -1,
+      true
+    );
+
+    // Expanding beacon ripple
+    ringScale.value = withRepeat(
+      withTiming(2.4, { duration: 1800, easing: Easing.out(Easing.quad) }),
+      -1,
+      false
+    );
+    ringOpacity.value = withRepeat(
+      withTiming(0, { duration: 1800, easing: Easing.out(Easing.quad) }),
+      -1,
+      false
+    );
+  }, [ringOpacity, ringScale, scale]);
+
+  const coreAnimStyle = useAnimatedStyle(() => ({
+    transform: [{ scale: scale.value }],
+  }));
+
+  const ringAnimStyle = useAnimatedStyle(() => ({
+    transform: [{ scale: ringScale.value }],
+    opacity: ringOpacity.value,
+  }));
+
+  return (
+    <View style={styles.pulseContainer}>
+      <Animated.View
+        style={[
+          styles.pulseRing,
+          { borderColor: color },
+          ringAnimStyle,
+        ]}
+      />
+      <Animated.View
+        style={[
+          styles.pulseDot,
+          { backgroundColor: color, shadowColor: color },
+          coreAnimStyle,
+        ]}
+      />
+    </View>
+  );
+}
+
 /**
  * SeverityBadge renders a precision status pill mapped to the 3-tier severity tokens.
- * Used for "LIVE STREAM", "HIGH RISK", "EMERGENCY PROTOCOL ACTIVE".
+ * Features an active live pulse wave for live indicators.
  */
 export function SeverityBadge({
   level,
@@ -49,17 +115,7 @@ export function SeverityBadge({
       ]}
       accessibilityRole="text"
       accessibilityLabel={`Severity ${level}: ${label}`}>
-      {showPulseDot && (
-        <View
-          style={[
-            styles.pulseDot,
-            {
-              backgroundColor: tokens.text,
-              shadowColor: tokens.text,
-            },
-          ]}
-        />
-      )}
+      {showPulseDot && <AnimatedPulseDot color={tokens.text} />}
       <Text
         style={[
           styles.label,
@@ -80,9 +136,23 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     alignSelf: 'flex-start',
-    gap: 5,
+    gap: 6,
     borderWidth: 1,
     borderRadius: BorderRadius.pill,
+  },
+  pulseContainer: {
+    width: 8,
+    height: 8,
+    alignItems: 'center',
+    justifyContent: 'center',
+    position: 'relative',
+  },
+  pulseRing: {
+    position: 'absolute',
+    width: 8,
+    height: 8,
+    borderRadius: 4,
+    borderWidth: 1,
   },
   pulseDot: {
     width: 6,

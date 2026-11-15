@@ -41,9 +41,69 @@ function clamp(min: number, value: number, max: number) {
   return Math.min(Math.max(value, min), max);
 }
 
+function NavTabButton({
+  tab,
+  active,
+  onPress,
+  iconSize,
+  labelSize,
+}: {
+  tab: NavTabItem;
+  active: boolean;
+  onPress: () => void;
+  iconSize: number;
+  labelSize: number;
+}) {
+  const itemColor = active ? BrandColors.primaryLight : DarkThemeColors.textMuted;
+
+  return (
+    <Pressable
+      onPress={onPress}
+      style={({ pressed }) => [
+        styles.tabButton,
+        pressed && styles.tabButtonPressed,
+      ]}
+      accessibilityRole="button"
+      accessibilityLabel={`${tab.label} tab`}
+      accessibilityState={{ selected: active }}>
+      <View style={styles.tabInner}>
+        {/* Soft Animated Active Indicator */}
+        <View
+          style={[
+            styles.activeIndicator,
+            active && styles.activeIndicatorVisible,
+          ]}
+        />
+
+        {/* Icon Container with notification dot */}
+        <View style={styles.iconContainer}>
+          <Icon name={tab.icon} size={iconSize} color={itemColor} />
+          {tab.badgeCount !== undefined && tab.badgeCount > 0 && !active && (
+            <View style={styles.alertBadgeDot} />
+          )}
+        </View>
+
+        {/* Tab Label */}
+        <Text
+          style={[
+            styles.tabLabel,
+            {
+              fontSize: labelSize,
+              color: itemColor,
+              fontWeight: active ? '700' : '500',
+            },
+          ]}
+          numberOfLines={1}>
+          {tab.label}
+        </Text>
+      </View>
+    </Pressable>
+  );
+}
+
 /**
- * Standardized BottomNav component shared across all five screens (Home, Map, Alerts, Analytics, Settings).
- * Maintains consistent notification dots, active cyan glow indicators, and safe-area bounds.
+ * Standardized BottomNav component shared across all five screens.
+ * Features spring-scale press feedback and smooth active indicator transitions.
  */
 export function BottomNav({
   currentTab = 'home',
@@ -59,8 +119,6 @@ export function BottomNav({
     onTabSelect?.(tabKey);
   };
 
-  const isCurrent = (tabKey: NavTabKey) => activeTab === tabKey;
-
   const iconSize = clamp(20, width * 0.052, 23);
   const labelSize = clamp(10, width * 0.027, 11.5);
   const bottomPadding = Math.max(insets.bottom, Platform.OS === 'ios' ? 14 : 10);
@@ -68,57 +126,16 @@ export function BottomNav({
   return (
     <View style={[styles.barWrapper, { paddingBottom: bottomPadding }, style]}>
       <View style={styles.tabContentContainer}>
-        {NAV_TABS.map((tab) => {
-          const active = isCurrent(tab.key);
-          const itemColor = active ? BrandColors.primaryLight : DarkThemeColors.textMuted;
-
-          return (
-            <Pressable
-              key={tab.key}
-              onPress={() => handlePress(tab.key)}
-              style={({ pressed }) => [
-                styles.tabButton,
-                pressed && styles.tabButtonPressed,
-              ]}
-              accessibilityRole="button"
-              accessibilityLabel={`${tab.label} tab`}
-              accessibilityState={{ selected: active }}>
-              {/* Subtle active indicator pill */}
-              <View
-                style={[
-                  styles.activeIndicator,
-                  active && styles.activeIndicatorVisible,
-                ]}
-              />
-
-              {/* Icon Container with notification dot */}
-              <View style={styles.iconContainer}>
-                <Icon
-                  name={tab.icon}
-                  size={iconSize}
-                  color={itemColor}
-                />
-                {tab.badgeCount !== undefined && tab.badgeCount > 0 && !active && (
-                  <View style={styles.alertBadgeDot} />
-                )}
-              </View>
-
-              {/* Tab Label */}
-              <Text
-                style={[
-                  styles.tabLabel,
-                  {
-                    fontSize: labelSize,
-                    color: itemColor,
-                    fontWeight: active ? '700' : '500',
-                  },
-                ]}
-                numberOfLines={1}>
-                {tab.label}
-              </Text>
-            </Pressable>
-          );
-        })}
+        {NAV_TABS.map((tab) => (
+          <NavTabButton
+            key={tab.key}
+            tab={tab}
+            active={activeTab === tab.key}
+            onPress={() => handlePress(tab.key)}
+            iconSize={iconSize}
+            labelSize={labelSize}
+          />
+        ))}
       </View>
     </View>
   );
@@ -152,14 +169,19 @@ const styles = StyleSheet.create({
   },
   tabButton: {
     flex: 1,
-    minHeight: 44, // 44px minimum touch target
+    minHeight: 44, // 44px min touch target
     alignItems: 'center',
     justifyContent: 'center',
-    paddingVertical: 4,
-    gap: 3,
+    paddingVertical: 2,
   },
   tabButtonPressed: {
-    opacity: 0.7,
+    transform: [{ scale: 0.92 }],
+    opacity: 0.75,
+  },
+  tabInner: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: 3,
   },
   activeIndicator: {
     width: 20,

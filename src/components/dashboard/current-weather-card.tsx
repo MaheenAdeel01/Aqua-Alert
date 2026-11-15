@@ -1,6 +1,7 @@
 import React, { useMemo } from 'react';
 import { StyleSheet, Text, useWindowDimensions, View } from 'react-native';
 
+import { AnimatedNumber } from '@/components/ui/animated-number';
 import { GlassCard } from '@/components/ui/glass-card';
 import { BorderRadius, Spacing } from '@/constants/theme';
 import { BrandColors, DarkThemeColors } from '@/theme';
@@ -92,16 +93,17 @@ export function CurrentWeatherCard({
 
       {/* Main Reading: Large Temperature readout + Secondary Details */}
       <View style={styles.tempRow}>
-        <Text
+        <AnimatedNumber
+          value={temperature}
+          suffix="°"
           style={[
             styles.tempValue,
             {
               fontSize: metrics.tempSize,
               lineHeight: metrics.tempSize * 1.05,
             },
-          ]}>
-          {temperature}°
-        </Text>
+          ]}
+        />
 
         <View style={styles.tempMetaGroup}>
           <View style={styles.metaLine}>

@@ -9,6 +9,7 @@ import {
 } from 'react-native';
 
 import { Icon, IconName } from '@/components/dashboard/icon';
+import { AnimatedNumber } from '@/components/ui/animated-number';
 import { GlassCard } from '@/components/ui/glass-card';
 import { DarkThemeColors, SeverityTier, SeverityTierTokens } from '@/theme';
 
@@ -72,17 +73,31 @@ export function StatCard({
       </View>
 
       {/* 2. Primary Telemetry Reading */}
-      <Text
-        style={[
-          styles.value,
-          {
-            fontSize: metrics.valSize,
-            color: severity === 'calm' ? DarkThemeColors.textPrimary : tokens.text,
-          },
-        ]}
-        numberOfLines={1}>
-        {value}
-      </Text>
+      {typeof value === 'number' || (typeof value === 'string' && /^\d+%$/.test(value)) ? (
+        <AnimatedNumber
+          value={typeof value === 'number' ? value : parseInt(value, 10)}
+          suffix={typeof value === 'string' && value.endsWith('%') ? '%' : ''}
+          style={[
+            styles.value,
+            {
+              fontSize: metrics.valSize,
+              color: severity === 'calm' ? DarkThemeColors.textPrimary : tokens.text,
+            },
+          ]}
+        />
+      ) : (
+        <Text
+          style={[
+            styles.value,
+            {
+              fontSize: metrics.valSize,
+              color: severity === 'calm' ? DarkThemeColors.textPrimary : tokens.text,
+            },
+          ]}
+          numberOfLines={1}>
+          {value}
+        </Text>
+      )}
 
       {/* 3. Fluid Progress Track */}
       <View

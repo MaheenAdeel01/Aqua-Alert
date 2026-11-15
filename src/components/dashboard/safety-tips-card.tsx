@@ -1,5 +1,5 @@
-import React, { useMemo } from 'react';
-import { StyleSheet, Text, useWindowDimensions, View } from 'react-native';
+import React, { useMemo, useState } from 'react';
+import { Pressable, StyleSheet, Text, useWindowDimensions, View } from 'react-native';
 
 import { GlassCard } from '@/components/ui/glass-card';
 import { SeverityBadge } from '@/components/ui/severity-badge';
@@ -17,17 +17,21 @@ function clamp(min: number, value: number, max: number) {
   return Math.min(Math.max(value, min), max);
 }
 
+const DEFAULT_EXTENDED_ADVISORY =
+  'Seek higher ground immediately if located in low-lying coastal zones. Avoid driving through flooded roadways, keep emergency communication channels clear, ensure backup battery packs are charged to 100%, and follow localized evacuation directives issued by county disaster management.';
+
 /**
- * Rebuilt Storm Surge Safety Advisory card strictly adhering to the Critical Severity Tier.
- * Fixes the previous color bug by using critical red borders, critical shield container,
- * and <SeverityBadge level="critical"> (zero hyperlink styling).
+ * Rebuilt Storm Surge Safety Advisory with Targeted Expand/Collapse.
+ * Collapses to 2 lines with a "Read More" trigger to maintain concise screen rhythm,
+ * smoothly expanding into full emergency directives upon user request.
  */
 export function SafetyTipsCard({
   title = 'Storm Surge Safety Advisory',
-  message = 'Seek higher ground immediately if located in low-lying coastal zones. Avoid driving through flooded roadways and ensure emergency power packs are charged.',
+  message = DEFAULT_EXTENDED_ADVISORY,
   badgeLabel = 'EMERGENCY PROTOCOL ACTIVE',
 }: SafetyTipsCardProps) {
   const { width } = useWindowDimensions();
+  const [isExpanded, setIsExpanded] = useState(false);
   const criticalTokens = SeverityTierTokens.critical;
 
   const metrics = useMemo(() => {
@@ -72,7 +76,7 @@ export function SafetyTipsCard({
             />
           </View>
 
-          {/* Advisory Body Copy */}
+          {/* Advisory Copy with Targeted 2-line Clamp */}
           <Text
             style={[
               styles.message,
@@ -80,11 +84,26 @@ export function SafetyTipsCard({
                 fontSize: metrics.bodySize,
                 lineHeight: metrics.bodySize * 1.45,
               },
-            ]}>
+            ]}
+            numberOfLines={isExpanded ? undefined : 2}>
             {message}
           </Text>
 
-          {/* Severity Badge (Replaces hyperlink-like text) */}
+          {/* Targeted Expand Toggle Button */}
+          <Pressable
+            onPress={() => setIsExpanded((prev) => !prev)}
+            style={({ pressed }) => [
+              styles.expandToggle,
+              pressed && styles.togglePressed,
+            ]}
+            accessibilityRole="button"
+            accessibilityLabel={isExpanded ? 'Collapse safety advisory' : 'Read more safety directives'}>
+            <Text style={[styles.expandToggleText, { color: criticalTokens.text }]}>
+              {isExpanded ? 'Read Less ↑' : 'Read More ↓'}
+            </Text>
+          </Pressable>
+
+          {/* Severity Badge (Zero hyperlink styling) */}
           <View style={styles.actionRow}>
             <SeverityBadge
               level="critical"
@@ -118,7 +137,7 @@ const styles = StyleSheet.create({
   },
   textContainer: {
     flex: 1,
-    gap: 6,
+    gap: 5,
   },
   titleRow: {
     flexDirection: 'row',
@@ -138,6 +157,18 @@ const styles = StyleSheet.create({
   message: {
     color: DarkThemeColors.textSecondary,
     fontWeight: '400',
+  },
+  expandToggle: {
+    paddingVertical: 2,
+    alignSelf: 'flex-start',
+  },
+  togglePressed: {
+    opacity: 0.7,
+  },
+  expandToggleText: {
+    fontSize: 11,
+    fontWeight: '700',
+    letterSpacing: 0.3,
   },
   actionRow: {
     flexDirection: 'row',
