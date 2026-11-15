@@ -1,7 +1,7 @@
 # Phase 2: Primary Telemetry (Weather Card & Risk Metrics Row)
 
 **Master Plan:** .agents/memory/plans/main-plan.md  
-**Status:** PENDING  
+**Status:** FINISHED ✓  
 
 ---
 
@@ -40,8 +40,8 @@
 ---
 
 ## Success & Verification Criteria
-- [ ] Card surfaces match loading screen transparency, subtle blur, and cyan border sheen.
-- [ ] Rain progress bar is vivid cyan (`#0EA5E9`).
-- [ ] Flood risk indicator is warning orange (`#F97316`).
-- [ ] Zero emoji usage — all icons are clean SVG / vector glyphs.
-- [ ] Cards flex cleanly without breaking on 320px screens.
+- [x] Card surfaces match loading screen transparency, subtle blur, and cyan border sheen.
+- [x] Rain progress bar is vivid cyan (`#0EA5E9`).
+- [x] Flood risk indicator is warning orange (`#F97316`).
+- [x] Zero emoji usage — all icons are clean SVG / vector glyphs.
+- [x] Cards flex cleanly without breaking on 320px screens.

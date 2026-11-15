@@ -1,7 +1,7 @@
 # Master Plan: Aqua Alert Dashboard Frontend
 
 **Date:** 2026-11-15  
-**Status:** IN PROGRESS (Phase 2 of 5)  
+**Status:** IN PROGRESS (Phase 3 of 5)  
 **Total Phases:** 5  
 **Category:** Frontend Architecture, Design Taste, Anti-AI SOP, Responsive Engineering  
 
@@ -33,7 +33,7 @@ Build the production-quality Aqua Alert Dashboard frontend in React Native Expo,
 - [x] **Phase 1: Foundation, Tokens, Background & Hero Section**
   - *Skills:* `frontend-baseline`, `design-taste-frontend`, `phone-layout-master`
   - *Deliverables:* Theme tokens, dashboard background framing, upper-left branding, cyclone visibility preservation, hero greeting/location.
-- [ ] **Phase 2: Primary Telemetry (Weather Card & Risk Metrics Row)**
+- [x] **Phase 2: Primary Telemetry (Weather Card & Risk Metrics Row)**
   - *Skills:* `frontend-baseline`, `design-engineering`, `svg-icon-craftsman`
   - *Deliverables:* Current weather card, Rain probability card with cyan progress bar, Flood risk card with orange severity indicator.
 - [ ] **Phase 3: Secondary Telemetry (Radar Placeholder, 4-Day Forecast & Safety Tips)**
